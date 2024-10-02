@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenando Valores</title>
+</head>
+<body>
+    <h1>Ordenando Valores</h1>
+
+    <input type="number" id="valor" placeholder="Digite um valor">
+
+    <button onclick="add()">Adicionar</button>
+
+    <select id="ordenacao">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="quick">Quick Sort</option>
+    </select>
+
+    <button onclick="ordenar()">Ordenar</button>
+
+    <button onclick="misturar()">Misturar</button>
+
+    <ul id="valores"></ul>
+
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function add() {
+            const input = document.getElementById('valor');
+            const node = document.createElement('li');
+            node.textContent = input.value;
+            document.getElementById('valores').appendChild(node);
+            input.value = '';
+        }
+
+        function ordenar() {
+            const listaValores = document.getElementById('valores');
+            const listaOrdenacao = document.getElementById('ordenacao');
+
+            const valores = Array.from(listaValores.children).map(node => {
+                return parseInt(eval(node.textContent));
+            });
+
+            const metodoOrdenacao = listaOrdenacao.value;
+
+            let ordenados = [];
+
+            switch(metodoOrdenacao) {
+                case 'bubble':
+                    ordenados = bubbleSort(valores);
+                    break;
+                case 'selection':
+                    ordenados = selectionSort(valores);
+                    break;
+                case 'quick':
+                    ordenados = quickSort(valores, 0, valores.length - 1);
+                    break;
+            }
+
+            listaValores.innerHTML = '';
+            ordenados.forEach(valor => {
+                const item = document.createElement('li');
+                item.textContent = valor;
+                listaValores.appendChild(item);
+            });
+        }
+
+        function misturar() {
+            const listaValores = document.getElementById('valores');
+            const valores = Array.from(listaValores.children).map(node => {
+                return parseInt(eval(node.textContent));
+            });
+
+            shuffle(valores);
+
+            listaValores.innerHTML = '';
+            valores.forEach(valor => {
+                const item = document.createElement('li');
+                item.textContent = valor;
+                listaValores.appendChild(item);
+            });
+        }
+
+        function bubbleSort(arr) {
+            let swapped = true;
+            while (swapped) {
+                swapped = false;
+                for (let i = 0; i < arr.length - 1; i++) {
+                    if (arr[i] > arr[i + 1]) {
+                        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                        swapped = true;
+                    }
+                }
+            }
+            return arr;
+        }
+
+        function selectionSort(arr) {
+            for (let i = 0; i < arr.length - 1; i++) {
+                let minIndex = i;
+                for (let j = i + 1; j < arr.length; j++) {
+                    if (arr[minIndex] > arr[j]) {
+                        minIndex = j;
+                    }
+                }
+                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            }
+            return arr;
+        }
+
+        function quickSort(arr, left, right) {
+            if (left >= right) {
+                return arr;
+            }
+            const pivot = partition(arr, left, right);
+            quickSort(arr, left, pivot - 1);
+            quickSort(arr, pivot + 1, right);
+
+            function partition(arr, low, high) {
+                const pivotValue = arr[high];
+                let i = low - 1;
+                for (let j = low; j <= high - 1; j++) {
+                    if (arr[j] <= pivotValue) {
+                        i++;
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                    }
+                }
+                [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+                return i + 1;
+            }
+            return arr;
+        }
+    </script>
+</body>
+</html>
